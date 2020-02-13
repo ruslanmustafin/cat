@@ -1,0 +1,4 @@
+fire==0.2.1,
+tqdm==4.40.2,
+jinja2==2.10.3,
+googletrans==2.4.0
