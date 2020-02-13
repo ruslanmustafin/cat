@@ -9,6 +9,14 @@ cd cat
 pip install .
 ```
 
+## Example
+
+Insert a new key `404_new_text` into file `404.php` with value `This is a sample text`:
+```
+python -m cat --root=~/work/site/public/views/messages --file=404.php --key=404_new_text --value="This is a sample text"
+```
+
+
 ## Usage
 
 ```
