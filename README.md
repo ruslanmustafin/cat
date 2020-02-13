@@ -2,6 +2,13 @@
 
 ## Installation
 
+### Requirements
+
+- Python >= 3.6
+- tqdm
+- Jinja2
+- fire
+
 ```
 (OPTIONAL) conda create -n cat python=3.6
 git clone https://github.com/ruslanmustafin/cat
