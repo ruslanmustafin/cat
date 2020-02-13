@@ -8,6 +8,7 @@
 - tqdm
 - Jinja2
 - fire
+- googletrans
 
 ```
 (OPTIONAL) conda create -n cat python=3.6
