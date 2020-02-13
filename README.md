@@ -23,4 +23,11 @@ Mandatory params:
 `value` - this value will be inserted into the list of existing translations
 
 Optional flags:
+
 `overwrite` - set to true in order to overwrite an existing key (throws `ValueError` if the key does not exist) 
+
+Example:
+```
+python -m cat --root=path_to_messages_folder --file=file_with_ext --key=existing_key --value="new value" --overwrite
+```
+The above command will try to replace a `existing_key` with `new value`
