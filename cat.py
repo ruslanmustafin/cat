@@ -55,8 +55,21 @@ def key_exists(translations, key):
         
     return False
 
+def replace_key(translations, key, translated_value):
+    for idx, t in enumerate(translations):
+        t_key = extract_key(t)
+        
+        if t_key == key:
+            break
+    else:
+        raise ValueError(f'Key {key} not found in translations!')
+            
+    translations[idx] = f"'{key}' => '{translated_value}'"
+    
+    return translations
+    
 
-def translate(root, file, key, value, force=False, src_lang='en'):
+def translate(root, file, key, value, overwrite=False, src_lang='en'):
     
     translator = Translator()
     template = Environment(loader=BaseLoader).from_string(DOC_TEMPLATE)
@@ -72,7 +85,7 @@ def translate(root, file, key, value, force=False, src_lang='en'):
         with open(path, 'r') as f:
             translations = [clean(l) for l in f.readlines() if is_translation(l)]
 
-        if force or not key_exists(translations, key):
+        if overwrite or not key_exists(translations, key):
             dst_lang = LANG_MAP.get(dst_lang, dst_lang)
 
             if dst_lang != 'en':
@@ -80,13 +93,15 @@ def translate(root, file, key, value, force=False, src_lang='en'):
             else:
                 translated_value = value
 
-
-            translations.append(f"'{key}' => '{translated_value}'")
+            if overwrite:
+                translations = replace_key(translations, key, translated_value)
+            else:
+                translations.append(f"'{key}' => '{translated_value}'")
 
             with open(path, 'w') as f:
                 f.write(template.render(lines=sorted(translations)))
         else:
-            print(f'language: {dst_lang}; file {file} - key {key} already exists. Set force to True to overwrite')
+            print(f'language: {dst_lang}; file {file} - key {key} already exists. Set overwrite to True to overwrite')
     
     
 if __name__ == '__main__':
