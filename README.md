@@ -15,8 +15,11 @@ python -m cat --root=path_to_messages_folder --file=file_with_ext --key=sample_k
 Mandatory params:
 
 `root` - path to the folder with messages
+
 `file` - what file to modify (example: `404.php`)
+
 `key` - this key will be inserted into the list of existing translations
+
 `value` - this value will be inserted into the list of existing translations
 
 Optional flags:
