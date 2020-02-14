@@ -4,6 +4,11 @@ import re
 
 import tqdm
 import fire
+import html
+
+import shutil
+
+from json import JSONDecodeError
 
 from jinja2 import Environment, BaseLoader
 from googletrans import Translator
@@ -33,6 +38,18 @@ def clean(l):
         l = l[:-1]
         
     return l
+
+def extract_value(l):
+    key = l.split('=>')[1].strip()
+    
+    if key.startswith("'") or key.startswith('"'):
+        key = key[1:]
+        
+    if key.endswith("'") or key.endswith('"'):
+        key = key[:-1]
+        
+    return key
+
 
 def extract_key(l):
     key = l.split('=>')[0].strip()
@@ -67,11 +84,57 @@ def replace_key(translations, key, translated_value):
     translations[idx] = f"'{key}' => '{translated_value}'"
     
     return translations
+
+
+def build_string(key, value):
+    return f'"{key}" => "{value}"'
+
+
+def add(root, code, template_lang='en'):
+    
+    translator = Translator(timeout=1.0)
+    template = Environment(loader=BaseLoader).from_string(DOC_TEMPLATE)
+    
+    template_dir = os.path.join(root, template_lang)
+    dest_dir = os.path.join(root, code)
+    
+    files = glob.glob(os.path.join(template_dir, '*'))
+    
+    os.makedirs(os.path.join(root, code), exist_ok=True)
+    
+    for f in tqdm.tqdm(files):
+        fname = os.path.basename(f)
+        out_fname = os.path.join(root, code, fname)
+        
+        if os.path.exists(out_fname):
+            print(f'{code}-{fname} already exists, skipping...')
+            continue
+        
+        with open(f, 'r') as f_in:
+            translations = [clean(l) for l in f_in.readlines() if is_translation(l)]
+            
+        keys = [extract_key(t) for t in translations]
+        values = [html.unescape(extract_value(t)) for t in translations]
+        
+        try:
+            translations = translator.translate(values, src=template_lang, dest=code)
+            
+            new_translations = []
+            
+            for key, value in zip(keys, translations):        
+                new_translations.append(build_string(key, value.text))
+            
+            with open(os.path.join(root, code, fname), 'w+') as f_out:
+                f_out.write(template.render(lines=sorted(new_translations)))
+                
+        except JSONDecodeError as e:
+            print(f'Could not translate {fname}, the text contains illegal characters (&,#,;) or you may have exceeded the request limit')
+            
     
 
 def translate(root, file, key, value, overwrite=False, src_lang='en'):
     
-    translator = Translator()
+    translator = Translator(timeout=1.0)
     template = Environment(loader=BaseLoader).from_string(DOC_TEMPLATE)
     
     all_langs = glob.glob(os.path.join(root, '*'))
@@ -96,7 +159,7 @@ def translate(root, file, key, value, overwrite=False, src_lang='en'):
             if overwrite:
                 translations = replace_key(translations, key, translated_value)
             else:
-                translations.append(f"'{key}' => '{translated_value}'")
+                translations.append(build_string(key, translated_value))
 
             with open(path, 'w') as f:
                 f.write(template.render(lines=sorted(translations)))
@@ -105,5 +168,5 @@ def translate(root, file, key, value, overwrite=False, src_lang='en'):
     
     
 if __name__ == '__main__':
-    fire.Fire(translate)
+    fire.Fire()
     
