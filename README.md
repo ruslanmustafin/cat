@@ -69,4 +69,4 @@ python -m cat newlang --root=path_to_messages_folder --code lang_code
 
 `root` - path to the folder with messages
 
-`code` - iso639-1 language code
+`code` - iso639-1 language code ([list of supported languages](https://py-googletrans.readthedocs.io/en/latest/#googletrans-languages))
