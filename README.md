@@ -27,7 +27,7 @@ Insert a new key `404_new_text` into file `404.php` with value `This is a sample
 python -m cat insert --root=~/work/site/public/views/messages --file=404.php --key=404_new_text --value="This is a sample text"
 ```
 
-Add a japananese translation:
+Add a japanese translation:
 ```
 python -m cat newlang --root=~/work/site/public/views/messages --code ja
 ```
