@@ -90,7 +90,7 @@ def build_string(key, value):
     return f'"{key}" => "{value}"'
 
 
-def add(root, code, template_lang='en'):
+def newlang(root, code, template_lang='en'):
     
     translator = Translator(timeout=1.0)
     template = Environment(loader=BaseLoader).from_string(DOC_TEMPLATE)
@@ -132,7 +132,7 @@ def add(root, code, template_lang='en'):
             
     
 
-def translate(root, file, key, value, overwrite=False, src_lang='en'):
+def insert(root, file, key, value, overwrite=False, src_lang='en'):
     
     translator = Translator(timeout=1.0)
     template = Environment(loader=BaseLoader).from_string(DOC_TEMPLATE)
