@@ -54,10 +54,10 @@ def extract_value(l):
 def extract_key(l):
     key = l.split('=>')[0].strip()
     
-    if key.startswith("'"):
+    if key.startswith("'") or key.startswith('"'):
         key = key[1:]
         
-    if key.endswith("'"):
+    if key.endswith("'") or key.endswith('"'):
         key = key[:-1]
         
     return key
@@ -147,6 +147,8 @@ def insert(root, file, key, value, overwrite=False, src_lang='en'):
 
         with open(path, 'r') as f:
             translations = [clean(l) for l in f.readlines() if is_translation(l)]
+
+        # print(key_exists(translations, key), translations, key)
 
         if overwrite or not key_exists(translations, key):
             dst_lang = LANG_MAP.get(dst_lang, dst_lang)
